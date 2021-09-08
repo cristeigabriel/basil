@@ -17,7 +17,7 @@ int main() {
         // retrieve "client.dll", we assume it's present by retrieving value directly
         auto client = obj.get_module("client.dll").value();
 
-        // print start as an address and size, in hex
+        // print start as an address and size
         std::cout << std::hex << "start: " << (uintptr_t)(client.start_) << " size: " << client.size_ << '\n';
 
         // auto state = obj.write_module_memory("fastprox.dll", 0xB5210, 0x0);
@@ -37,9 +37,22 @@ int main() {
         // find pointer to local player position in entity list
         constexpr std::array local_sig = {0x83, 0x3D, -1, -1, -1, -1, -1, 0x75, 0x68, 0x8B, 0x0D, -1, -1, -1, -1, 0x8B, 0x01};
         auto local                     = obj.pattern_scan_module("client.dll", local_sig);
+
+        // print health
         if (local.has_value()) {
-            std::cout << '\n'
-                      << "local: " << std::hex << local.value() + 2 << '\n';
+            const auto read = obj.read_memory<uintptr_t>(local.value() + 2);
+            if (read.has_value()) {
+                const auto& [bytes, bytes_read] = read.value();
+                const auto read                 = obj.read_memory<uintptr_t>(bytes);
+                if (read.has_value()) {
+                    const auto& [player, bytes_read] = read.value();
+                    const auto read                  = obj.read_memory<int>(player + 0x100);
+                    if (read.has_value()) {
+                        auto [health, bytes_read] = read.value();
+                        std::cout << "\nlocal health: " << std::dec << health;
+                    }
+                }
+            }
         }
     } catch (const std::exception& err) {
         // print and flush buffers
