@@ -12,7 +12,6 @@
 #ifndef BASIL_DEF
 #define BASIL_DEF
 
-#include <iostream>
 #include <Windows.h>
 #include <utility>
 #include <optional>
