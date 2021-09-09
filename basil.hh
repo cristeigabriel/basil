@@ -129,22 +129,22 @@ struct ctx {
     void capture_all_modules();
 
     template<typename T>
-    [[nodiscard]] inline std::optional<std::pair<T, size_t>> read_memory(uintptr_t at);
+    [[nodiscard]] inline std::optional<std::pair<T, size_t>> read_memory(uintptr_t at) const;
 
     template<typename T>
-    [[nodiscard]] inline std::optional<std::pair<T, size_t>> read_module_memory(std::string&& name, uintptr_t at);
+    [[nodiscard]] inline std::optional<std::pair<T, size_t>> read_module_memory(std::string&& name, uintptr_t at) const;
 
     template<typename T>
-    inline std::pair<bool, size_t> write_memory(uintptr_t at, const T value);
+    inline std::pair<bool, size_t> write_memory(uintptr_t at, const T value) const;
 
     template<typename T>
-    inline std::pair<bool, size_t> write_module_memory(std::string&& name, uintptr_t at, const T value);
+    inline std::pair<bool, size_t> write_module_memory(std::string&& name, uintptr_t at, const T value) const;
 
     template<size_t N>
-    [[nodiscard]] inline std::optional<uintptr_t> pattern_scan(const std::array<int, N>& pattern, uintptr_t start, uintptr_t end);
+    [[nodiscard]] inline std::optional<uintptr_t> pattern_scan(const std::array<int, N>& pattern, uintptr_t start, uintptr_t end) const;
 
     template<size_t N>
-    [[nodiscard]] inline std::optional<uintptr_t> pattern_scan_module(std::string&& name, const std::array<int, N>& pattern);
+    [[nodiscard]] inline std::optional<uintptr_t> pattern_scan_module(std::string&& name, const std::array<int, N>& pattern) const;
 
   private:
     std::string name_;
@@ -156,12 +156,12 @@ struct ctx {
 };
 
 template<typename T>
-std::optional<std::pair<T, size_t>> ctx::read_memory(uintptr_t at) {
+std::optional<std::pair<T, size_t>> ctx::read_memory(uintptr_t at) const {
     return impl::read_process_memory<T>(this->handle_.value(), at);
 }
 
 template<typename T>
-std::optional<std::pair<T, size_t>> ctx::read_module_memory(std::string&& name, uintptr_t at) {
+std::optional<std::pair<T, size_t>> ctx::read_module_memory(std::string&& name, uintptr_t at) const {
     const std::optional<module> module = get_module(std::move(name));
 
     if (module.has_value()) {
@@ -173,12 +173,12 @@ std::optional<std::pair<T, size_t>> ctx::read_module_memory(std::string&& name, 
 }
 
 template<typename T>
-std::pair<bool, size_t> ctx::write_memory(uintptr_t at, const T value) {
+std::pair<bool, size_t> ctx::write_memory(uintptr_t at, const T value) const {
     return impl::write_process_memory<T>(this->handle_.value(), at, value);
 }
 
 template<typename T>
-std::pair<bool, size_t> ctx::write_module_memory(std::string&& name, uintptr_t at, const T value) {
+std::pair<bool, size_t> ctx::write_module_memory(std::string&& name, uintptr_t at, const T value) const {
     const std::optional<module> module = get_module(std::move(name));
 
     if (module.has_value()) {
@@ -190,12 +190,12 @@ std::pair<bool, size_t> ctx::write_module_memory(std::string&& name, uintptr_t a
 }
 
 template<size_t N>
-std::optional<uintptr_t> ctx::pattern_scan(const std::array<int, N>& pattern, uintptr_t start, uintptr_t end) {
+std::optional<uintptr_t> ctx::pattern_scan(const std::array<int, N>& pattern, uintptr_t start, uintptr_t end) const {
     return impl::pattern_scan_process<N>(this->handle_.value(), pattern, start, end);
 }
 
 template<size_t N>
-std::optional<uintptr_t> ctx::pattern_scan_module(std::string&& name, const std::array<int, N>& pattern) {
+std::optional<uintptr_t> ctx::pattern_scan_module(std::string&& name, const std::array<int, N>& pattern) const {
     const std::optional<module> module = get_module(std::move(name));
 
     if (module.has_value()) {
