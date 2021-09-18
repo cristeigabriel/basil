@@ -162,7 +162,7 @@ std::optional<std::pair<T, size_t>> ctx::read_memory(uintptr_t at) const {
 
 template<typename T>
 std::optional<std::pair<T, size_t>> ctx::read_module_memory(std::string&& name, uintptr_t at) const {
-    const std::optional<module> module = get_module(std::move(name));
+    const std::optional<module> module = capture_module(std::move(name));
 
     if (module.has_value()) {
         const uintptr_t start = (uintptr_t)(module.value().start_);
@@ -179,7 +179,7 @@ std::pair<bool, size_t> ctx::write_memory(uintptr_t at, const T value) const {
 
 template<typename T>
 std::pair<bool, size_t> ctx::write_module_memory(std::string&& name, uintptr_t at, const T value) const {
-    const std::optional<module> module = get_module(std::move(name));
+    const std::optional<module> module = capture_module(std::move(name));
 
     if (module.has_value()) {
         const uintptr_t start = (uintptr_t)(module.value().start_);
@@ -196,7 +196,7 @@ std::optional<uintptr_t> ctx::pattern_scan(const std::array<int, N>& pattern, ui
 
 template<size_t N>
 std::optional<uintptr_t> ctx::pattern_scan_module(std::string&& name, const std::array<int, N>& pattern) const {
-    const std::optional<module> module = get_module(std::move(name));
+    const std::optional<module> module = capture_module(std::move(name));
 
     if (module.has_value()) {
         const auto& [start, end]      = module.value();
