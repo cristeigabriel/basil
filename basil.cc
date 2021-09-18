@@ -122,8 +122,8 @@ std::optional<module> ctx::capture_module(std::string&& name) {
     }
 
     MODULEENTRY32 buffer {.dwSize = sizeof(MODULEENTRY32)};
-    if (get_handle_modules_snapshot().has_value()) {
-        const HANDLE& snapshot = get_handle_modules_snapshot().value();
+    if (const std::optional<HANDLE> handle_modules_snapshot = get_handle_modules_snapshot(); handle_modules_snapshot.has_value()) {
+        const HANDLE& snapshot = handle_modules_snapshot.value();
         for (bool copied = Module32First(snapshot, &buffer); copied; copied = Module32Next(snapshot, &buffer)) {
             const size_t current_hash = detail::hasher<>::get(buffer.szModule, strlen(buffer.szModule));
 
@@ -141,8 +141,8 @@ std::optional<module> ctx::capture_module(std::string&& name) {
 
 void ctx::capture_all_modules() {
     MODULEENTRY32 buffer {.dwSize = sizeof(MODULEENTRY32)};
-    if (get_handle_modules_snapshot().has_value()) {
-        const HANDLE& snapshot = get_handle_modules_snapshot().value();
+    if (const std::optional<HANDLE> handle_modules_snapshot = get_handle_modules_snapshot(); handle_modules_snapshot.has_value()) {
+        const HANDLE& snapshot = handle_modules_snapshot.value();
         for (bool copied = Module32First(snapshot, &buffer); copied; copied = Module32Next(snapshot, &buffer)) {
             const size_t current_hash    = detail::hasher<>::get(buffer.szModule, strlen(buffer.szModule));
             this->modules_[current_hash] = module {
