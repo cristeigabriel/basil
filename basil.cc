@@ -117,6 +117,9 @@ std::optional<module> ctx::get_module(std::string&& name) const {
 
 std::optional<module> ctx::capture_module(std::string&& name) {
     const size_t name_hash = detail::hasher<>::get(name.c_str(), name.size());
+    if (this->modules_.contains(name_hash)) {
+        return this->modules_.at(name_hash);
+    }
 
     MODULEENTRY32 buffer {.dwSize = sizeof(MODULEENTRY32)};
     if (get_handle_modules_snapshot().has_value()) {
